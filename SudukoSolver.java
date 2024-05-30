@@ -2,7 +2,8 @@ public class SudukoSolver {
 
     private static final int GRID_SIZE = 9;
     public static void main(String[] args) {
-        int[][] board = {
+        // Sample Starting Suduko Board:
+        int[][] board = { 
             {7, 0, 2, 0, 5, 0, 6, 0, 0},
             {0, 0, 0, 0, 0, 3, 0, 0, 0},
             {1, 0, 0, 0, 0, 9, 5, 0, 0},
@@ -14,18 +15,35 @@ public class SudukoSolver {
             {0, 0, 7, 0, 4, 0, 2, 0, 3}
         };
 
+        // Prints the starting suduko board
+        System.out.println("Unsolved Board: ");
+        printBoard(board);
+
+        // Prints the solved board if applicable
         if (solveBoard(board)) {
-            System.out.println("Solved Successfully!");
+            System.out.println("\nSolved Successfully!");
+            System.out.println("\nSolved Board: ");
+            printBoard(board);
         } else {
-            System.out.println("Unsolvable board");
+            System.out.println("\nUnsolvable board... :(");
         }
 
-        printBoard(board);
+
     }
 
+    /**
+     * Method that prints the solved board
+     * @param board the suduko game board
+     */
     private static void printBoard(int[][] board) {
         for (int row = 0; row < GRID_SIZE; row++) {
+            if (row % 3 == 0 && row != 0) {
+                System.out.println("-----------");
+            }
             for (int column = 0; column < GRID_SIZE; column++) {
+                if (column % 3 == 0 && column != 0) {
+                    System.out.print("|");
+                }
                 System.out.print(board[row][column]);
             }
             System.out.println();
@@ -107,26 +125,32 @@ public class SudukoSolver {
                !isNumberInBox(board, number, row, column);
     }
 
+    /**
+     * Method for the key recursive algorithm that returns true if 
+     * every number has been successfully placed on the board in it's proper spot.
+     * @param board the suduko game board
+     * @return boolean value of if the board has been solved
+     */
     private static boolean solveBoard(int[][] board) {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int column = 0; column < GRID_SIZE; column++) {
-                if (board[row][column] == 0) {
-                    for (int numberToTry = 1; numberToTry <= GRID_SIZE; numberToTry++) {
+                if (board[row][column] == 0) { // If a space = 0, it means it is empty therefore, we can try a number there
+                    for (int numberToTry = 1; numberToTry <= GRID_SIZE; numberToTry++) { // Iterate through numbers 1-9 at an empty spot until one passes isValidPlacement
                         if (isValidPlacement(board, numberToTry, row, column)) {
                             board[row][column] = numberToTry;
 
-                            if (solveBoard(board)) {
-                                return true;
+                            if (solveBoard(board)) { // Recursive call so the next number can be placed
+                                return true; // The placement allowed for all future placements to work, the board is solved
                             } 
                             else {
-                                board[row][column] = 0;
+                                board[row][column] = 0; // The last placement did not allow for the rest of the board to be solved, reset it to 0
                             }
                         }
                     }
-                    return false;
+                    return false; // No valid number 1-9 at this placement, therefore we backtrack and reset the last placed number to 0
                 }
             }
         }
-        return true;
+        return true; // The board has fully been iterated through, no empty spots, the board is solved
     }
 }
